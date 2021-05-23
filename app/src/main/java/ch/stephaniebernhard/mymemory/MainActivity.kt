@@ -3,7 +3,13 @@ package ch.stephaniebernhard.mymemory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.RadioGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +17,7 @@ import ch.stephaniebernhard.mymemory.models.BoardSize
 import ch.stephaniebernhard.mymemory.models.MemoryCard
 import ch.stephaniebernhard.mymemory.models.MemoryGame
 import ch.stephaniebernhard.mymemory.utils.DEFAULT_ICONS
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -37,6 +44,80 @@ class MainActivity : AppCompatActivity() {
         tvNumMoves = findViewById(R.id.tvNumMoves)
         tvNumPairs = findViewById(R.id.tvNumPairs)
 
+        setupBoard()
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.mi_refresh -> {
+                // restart game
+                if (memoryGame.getNumMoves() > 0 && !memoryGame.haveWonGame()){
+                    showAlertDialog("Quit your current game?", null, View.OnClickListener {
+                        setupBoard()
+                    })
+                } else {
+                    setupBoard()
+                }
+                return true
+            }
+            R.id.mi_new_size -> {
+                showNewSizeDialog()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showNewSizeDialog() {
+        val boardSizeView = LayoutInflater.from(this).inflate(R.layout.dialog_board_size, null)
+        val radioGroupSize = boardSizeView.findViewById<RadioGroup>(R.id.radioGroup)
+        when (boardSize) {
+            BoardSize.EASY -> radioGroupSize.check(R.id.rbEasy)
+            BoardSize.MEDIUM -> radioGroupSize.check(R.id.rbMedium)
+            BoardSize.HARD -> radioGroupSize.check(R.id.rbHard)
+        }
+        showAlertDialog( "Choose new size", boardSizeView, View.OnClickListener {
+            // set new value for board size
+            boardSize = when (radioGroupSize.checkedRadioButtonId){
+                R.id.rbEasy -> BoardSize.EASY
+                R.id.rbMedium -> BoardSize.MEDIUM
+                else -> BoardSize.HARD
+            }
+            setupBoard()
+        })
+    }
+
+    private fun showAlertDialog(title: String, view: View?, positiveClickListener: View.OnClickListener) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setView(view)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("OK"){_, _ ->
+                positiveClickListener.onClick(null)
+            }.show()
+    }
+
+    private fun setupBoard() {
+        when (boardSize) {
+            BoardSize.EASY -> {
+                tvNumMoves.text = "Easy: 4 x 2"
+                tvNumPairs.text = "Pairs: 0 / 4"
+            }
+            BoardSize.MEDIUM -> {
+                tvNumMoves.text = "Medium: 6 x 3"
+                tvNumPairs.text = "Pairs: 0 / 9"
+            }
+            BoardSize.HARD -> {
+                tvNumMoves.text = "Hard: 6 x 4"
+                tvNumPairs.text = "Pairs: 0 / 12"
+            }
+        }
         memoryGame = MemoryGame(boardSize)
         adapter = MemoryBoardAdapter(this, boardSize, memoryGame.cards, object: MemoryBoardAdapter.CardClickListener{
             override fun onCardClicked(position: Int) {
