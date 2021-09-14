@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         // only for testing purposes
         val intent = Intent(this, CreateActivity::class.java)
-        intent.putExtra(EXTRA_BOARD_SIZE, BoardSize.MEDIUM)
+        intent.putExtra(EXTRA_BOARD_SIZE, BoardSize.EASY)
         startActivity(intent)
 
         setupBoard()
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         // Error checking
         if (memoryGame.haveWonGame()) {
             // Alert user of invalid move
-            Snackbar.make(clRoot, "You alreay won!", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(clRoot, "You already won!", Snackbar.LENGTH_LONG).show()
             return
         }
         if (memoryGame.isCardFaceUp(position)){

@@ -3,6 +3,7 @@
     package="ch.stephaniebernhard.mymemory">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permissions.INTERNET" />
 
     <application
         android:allowBackup="true"
