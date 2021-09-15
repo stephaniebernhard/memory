@@ -2,8 +2,8 @@ package ch.stephaniebernhard.mymemory.utils
 
 import ch.stephaniebernhard.mymemory.R
 
+const val EXTRA_GAME_NAME = "EXTRA_GAME_NAME"
 const val EXTRA_BOARD_SIZE = "EXTRA_BOARD_SIZE"
-
 val DEFAULT_ICONS = listOf(
     R.drawable.ic_android,
     R.drawable.ic_archive,
